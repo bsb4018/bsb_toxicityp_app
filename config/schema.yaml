@@ -1,0 +1,21 @@
+columns:
+- class: category
+- Index: int
+- NdsCH: int
+- NdssC: int
+- CIC0: float
+- GATS1i: float
+- MLOGP: float
+- SM1_DzZ: float
+numerical_columns:
+- CIC0
+- GATS1i
+- MLOGP
+- SM1_DzZ
+categorical_columns:
+- NdsCH
+- NdssC
+target_columns:
+- responseLC50
+drop_columns:
+- Index

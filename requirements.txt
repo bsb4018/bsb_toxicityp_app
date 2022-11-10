@@ -20,3 +20,5 @@ wincertstore
 xgboost
 neuro-mf
 python-multipart
+cassandra-driver
+path
