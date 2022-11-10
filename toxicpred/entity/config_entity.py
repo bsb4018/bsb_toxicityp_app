@@ -24,3 +24,4 @@ class DataIngestionConfig:
             self.data_ingestion_dir, training_pipeline.DATA_INGESTION_INGESTED_DIR, training_pipeline.TEST_FILE_NAME
         )
         self.train_test_split_ratio: float = training_pipeline.DATA_INGESTION_TRAIN_TEST_SPLIT_RATION
+        self.random_state: int = training_pipeline.DATA_INGESTION_RANDOM_STATE
