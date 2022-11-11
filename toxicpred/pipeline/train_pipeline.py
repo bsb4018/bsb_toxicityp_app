@@ -3,8 +3,9 @@ from toxicpred.components.data_ingestion import DataIngestion
 from toxicpred.components.data_transformation import DataTransformation
 from toxicpred.components.data_validation import DataValidation
 from toxicpred.components.model_trainer import ModelTrainer
-from toxicpred.entity.config_entity import DataTransformationConfig, DataValidationConfig, ModelTrainerConfig, TrainingPipelineConfig,DataIngestionConfig
-from toxicpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact
+from toxicpred.components.model_evaluation import ModelEvaluation
+from toxicpred.entity.config_entity import DataTransformationConfig, DataValidationConfig, ModelEvaluationConfig, ModelTrainerConfig, TrainingPipelineConfig,DataIngestionConfig
+from toxicpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact, ModelTrainerArtifact
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
 
@@ -97,6 +98,23 @@ class TrainPipeline:
 
         except  Exception as e:
             raise  ToxicityException(e,sys) from e
+
+    def start_model_evaluation(self,data_validation_artifact:DataValidationArtifact,
+                                 model_trainer_artifact:ModelTrainerArtifact,
+                                ):
+        try:
+            logging.info("Entered the start_model_evaluation method of TrainPipeline class")
+            model_eval_config = ModelEvaluationConfig(self.training_pipeline_config)
+            model_eval = ModelEvaluation(model_eval_config, data_validation_artifact, model_trainer_artifact)
+            model_eval_artifact = model_eval.initiate_model_evaluation()
+
+            logging.info("Performed the Model Evaluation operation")
+            logging.info(
+                "Exited the start_model_evaluation method of TrainPipeline class"
+            )
+            return model_eval_artifact
+        except  Exception as e:
+            raise ToxicityException(e,sys) from e
     
     def run_pipeline(self,) -> None:
         try:
@@ -106,7 +124,9 @@ class TrainPipeline:
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(data_validation_artifact=data_validation_artifact)
             model_trainer_artifact = self.start_model_trainer(data_transformation_artifact)
-            
+            model_eval_artifact = self.start_model_evaluation(data_validation_artifact, model_trainer_artifact)
+
+            TrainPipeline.is_pipeline_running=False
             logging.info("Training Pipeline Running Operation Complete")
             logging.info(
                 "Exited the run_pipeline method of TrainPipeline class"
