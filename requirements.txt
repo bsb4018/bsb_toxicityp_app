@@ -23,5 +23,6 @@ python-multipart
 cassandra-driver
 path
 hyperopt
+optuna
 mlflow[extra]
 -e.

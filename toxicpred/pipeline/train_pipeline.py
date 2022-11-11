@@ -2,7 +2,8 @@ import sys
 from toxicpred.components.data_ingestion import DataIngestion
 from toxicpred.components.data_transformation import DataTransformation
 from toxicpred.components.data_validation import DataValidation
-from toxicpred.entity.config_entity import DataTransformationConfig, DataValidationConfig, TrainingPipelineConfig,DataIngestionConfig
+from toxicpred.components.model_trainer import ModelTrainer
+from toxicpred.entity.config_entity import DataTransformationConfig, DataValidationConfig, ModelTrainerConfig, TrainingPipelineConfig,DataIngestionConfig
 from toxicpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
@@ -78,6 +79,24 @@ class TrainPipeline:
             return data_transformation_artifact
         except Exception as e:
             raise ToxicityException(e, sys) from e
+
+    def start_model_trainer(self,data_transformation_artifact:DataTransformationArtifact):
+        try:
+            logging.info("Entered the start_model_trainer method of TrainPipeline class")
+            model_trainer_config = ModelTrainerConfig(training_pipeline_config=self.training_pipeline_config)
+            model_trainer = ModelTrainer(model_trainer_config, data_transformation_artifact)
+            model_trainer_artifact = model_trainer.initiate_model_trainer()
+
+
+            logging.info("Performed the Model Training operation")
+            logging.info(
+                "Exited the start_model_trainer method of TrainPipeline class"
+            )
+
+            return model_trainer_artifact
+
+        except  Exception as e:
+            raise  ToxicityException(e,sys) from e
     
     def run_pipeline(self,) -> None:
         try:
@@ -86,7 +105,8 @@ class TrainPipeline:
             data_ingestion_artifact:DataIngestionArtifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(data_validation_artifact=data_validation_artifact)
-
+            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact)
+            
             logging.info("Training Pipeline Running Operation Complete")
             logging.info(
                 "Exited the run_pipeline method of TrainPipeline class"
