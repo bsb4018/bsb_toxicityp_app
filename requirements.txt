@@ -22,3 +22,6 @@ neuro-mf
 python-multipart
 cassandra-driver
 path
+hyperopt
+mlflow[extra]
+-e.
