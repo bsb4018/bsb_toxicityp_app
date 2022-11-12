@@ -80,5 +80,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-notebooks/
-./mlruns
+
+#experiments
+notebooks
+mlruns/
+model_exp6.ipynb
+model_runs_exp.ipynb
+view_and_try.ipynb
