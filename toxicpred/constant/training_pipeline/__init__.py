@@ -27,6 +27,9 @@ DATA_INGESTION_INGESTED_DIR: str = "ingested"
 DATA_INGESTION_TRAIN_TEST_SPLIT_RATION: float = 0.2
 DATA_INGESTION_RANDOM_STATE: int = 42
 
+ #DATA_INGESTION_RANDOM_STATE: int = 34         'logs\11_12_2022_03_12_12.log' 'artifact\11_12_2022_03_12_12'
+ #DATA_INGESTION_RANDOM_STATE: int = 38 #best   'logs\11_12_2022_03_14_44.log' 'artifact\11_12_2022_03_14_44'
+
 
 '''
 Data Validation related constant start with DATA_VALIDATION VAR NAME
@@ -63,3 +66,10 @@ MODEL EVALUATION ralated constant start with MODEL_EVALUATION VAR NAME
 MODEL_EVALUATION_DIR_NAME: str = "model_evaluation"
 MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.005
 MODEL_EVALUATION_REPORT_NAME= "report.yaml"
+
+
+'''
+Model Pusher ralated constant start with MODEL_PUSHER VAR NAME
+'''
+MODEL_PUSHER_DIR_NAME = "model_pusher"
+MODEL_PUSHER_SAVED_MODEL_DIR = SAVED_MODEL_DIR
