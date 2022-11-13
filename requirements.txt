@@ -1,6 +1,7 @@
 path
 boto3
 botocore-stubs
+matplotlib
 dill
 dnspython
 evidently

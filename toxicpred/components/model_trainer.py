@@ -25,9 +25,9 @@ class ModelTrainer:
 
     def train_model(self, x_train, y_train):
         try:
-            model_svr = SVR(C = 0.9808155406244474, coef0 = 1.0617585221865262,\
-                           degree = 3, epsilon = 0.1797523576454031, gamma = 'scale', 
-                           kernel = 'rbf', max_iter = 300, tol = 0.027295414375092093)
+            model_svr = SVR(C = 1.4316, coef0 = 1.9459,\
+                           degree = 3, epsilon = 0.1478, gamma = 'auto', 
+                           kernel = 'rbf', max_iter = 800, tol = 2.2351)
             model_svr.fit(x_train, y_train)
             return model_svr
         except Exception as e:
