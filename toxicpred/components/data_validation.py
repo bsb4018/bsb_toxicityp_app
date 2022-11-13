@@ -3,6 +3,9 @@ import json
 import pandas as pd
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
+from evidently.dashboard import Dashboard
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.dashboard.tabs import DataDriftTab
 from pandas import DataFrame
 from toxicpred.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from toxicpred.entity.config_entity import DataValidationConfig
@@ -91,6 +94,7 @@ class DataValidation:
         if there is dataset drift found
         '''
         try:
+
             data_drift_profile = Profile(sections=[DataDriftProfileSection()])
 
             data_drift_profile.calculate(base_df, current_df)
@@ -104,13 +108,18 @@ class DataValidation:
             )
 
             n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
-            n_drifted_features = json_report["data_drift"]["data"]["metrics"][
-                "n_drifted_features"
-            ]
+            n_drifted_features = json_report["data_drift"]["data"]["metrics"]["n_drifted_features"]
 
-            logging.info(f"{n_drifted_features}/{n_features} drift detected.")
+
+            data_drift_dashboard = Dashboard(tabs=[DataDriftTab()])
+            data_drift_dashboard.calculate(base_df, current_df)
+            #data_drift_dashboard.show()
+            data_drift_dashboard.save(self.data_validation_config.drift_report_dashboard_path)
+
+            logging.info(f"Drift detected in {n_drifted_features} out of {n_features}")
             drift_status = json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
             return drift_status
+
         except Exception as e:
             raise ToxicityException(e, sys) from e
 
@@ -222,6 +231,7 @@ class DataValidation:
                 invalid_train_file_path=self.data_validation_config.invalid_train_file_path,
                 invalid_test_file_path=self.data_validation_config.invalid_test_file_path,
                 drift_report_file_path=self.data_validation_config.drift_report_file_path,
+                drift_report_dashboard_path= self.data_validation_config.drift_report_dashboard_path
             )
 
             logging.info(f"Data validation artifact: {data_validation_artifact}")
