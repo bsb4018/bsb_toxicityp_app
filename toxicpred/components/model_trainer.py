@@ -30,7 +30,13 @@ class ModelTrainer:
         try:
             level0 = list()
             level0.append(('knn', KNeighborsRegressor(n_neighbors= 5, p = 1)))
-            level0.append(('svr', SVR(kernel='rbf', degree= 3, gamma= 'scale', coef0 = 0.521403340782325, tol= 2.1024735693329815, C= 1.288518763093159, epsilon= 0.12534727758142855, max_iter= 1000)))
+            level0.append(('svr', SVR(kernel='rbf', 
+            degree= 3, gamma= 'scale', 
+            coef0 = 0.521403340782325, 
+            tol= 2.1024735693329815, 
+            C= 1.288518763093159, 
+            epsilon= 0.12534727758142855, 
+            max_iter= 1000)))
             level1 = LinearRegression()
             model = StackingRegressor(estimators=level0, final_estimator=level1, cv=5)
             model.fit(x_train, y_train)
