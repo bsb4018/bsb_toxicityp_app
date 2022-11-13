@@ -41,6 +41,11 @@ class DataValidationConfig:
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_DIR,
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME,
         )
+        self.drift_report_dashboard_path: str = os.path.join(
+            self.data_validation_dir, 
+            training_pipeline.DATA_VALIDATION_DASHBOARD_DIR,
+            training_pipeline.DATA_VALIDATION_DASHBOARD_FILE_NAME
+        )
 
 
 class DataTransformationConfig:
