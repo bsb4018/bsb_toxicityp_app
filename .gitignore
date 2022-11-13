@@ -82,8 +82,12 @@ dmypy.json
 .pyre/
 
 #experiments
-notebooks
+notebooks/
 mlruns/
+model_exp1.ipynb
+model_exp2.ipynb
+model_exp3.ipynb
+model_exp4.ipynb
+model_exp5.ipynb
 model_exp6.ipynb
-model_runs_exp.ipynb
-view_and_try.ipynb
+model_exp_main.ipynb
