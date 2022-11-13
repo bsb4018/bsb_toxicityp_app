@@ -9,7 +9,10 @@ from toxicpred.entity.artifact_entity import (DataTransformationArtifact,
 from toxicpred.entity.config_entity import ModelTrainerConfig
 from toxicpred.ml.metric.regression_metric import get_regression_score
 from toxicpred.ml.model.estimator import ToxicityModel
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
+from sklearn.ensemble import StackingRegressor
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -21,15 +24,18 @@ class ModelTrainer:
             self.model_trainer_config = model_trainer_config
             self.data_transformation_artifact = data_transformation_artifact
         except Exception as e:
-            raise ToxicityException(e,sys) 
+            raise ToxicityException(e,sys)
 
     def train_model(self, x_train, y_train):
         try:
-            model_svr = SVR(C = 1.4316, coef0 = 1.9459,\
-                           degree = 3, epsilon = 0.1478, gamma = 'auto', 
-                           kernel = 'rbf', max_iter = 800, tol = 2.2351)
-            model_svr.fit(x_train, y_train)
-            return model_svr
+            level0 = list()
+            level0.append(('knn', KNeighborsRegressor(n_neighbors= 5, p = 1)))
+            level0.append(('svr', SVR(kernel='rbf', degree= 3, gamma= 'scale', coef0 = 0.521403340782325, tol= 2.1024735693329815, C= 1.288518763093159, epsilon= 0.12534727758142855, max_iter= 1000)))
+            level1 = LinearRegression()
+            model = StackingRegressor(estimators=level0, final_estimator=level1, cv=5)
+            model.fit(x_train, y_train)
+            return model
+
         except Exception as e:
             raise e
 
@@ -64,12 +70,6 @@ class ModelTrainer:
 
             y_test_pred = model.predict(x_test)
             regression_test_metric = get_regression_score(y_true=y_test, y_pred=y_test_pred)
-
-            #Overfitting and Underfitting
-            diff = abs(regression_train_metric.r2_score-regression_test_metric.r2_score)
-            
-            if diff>self.model_trainer_config.overfitting_underfitting_threshold:
-                raise Exception("Model is not good try to do more experimentation.")
 
             preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
             
