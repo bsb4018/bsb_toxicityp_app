@@ -20,7 +20,9 @@ class ToxicityModel:
             categorical_columns = self._schema_config["categorical_columns"]
             x_transform = self.preprocessor.transform(x[numerical_columns])
             x_transform_df = pd.DataFrame(x_transform, columns = numerical_columns)
-            x_transform_df_main = pd.concat([x_transform_df,x[categorical_columns]],axis=1)
+            x_transform_df_main = x_transform_df.reset_index(drop=True)
+            categorical_df = x[categorical_columns].reset_index(drop=True)
+            x_transform_df_main = pd.concat([x_transform_df_main,categorical_df],axis=1)
             y_hat = self.model.predict(x_transform_df_main)
             return y_hat
         except Exception as e:
