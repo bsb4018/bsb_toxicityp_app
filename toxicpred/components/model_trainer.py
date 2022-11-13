@@ -28,12 +28,11 @@ class ModelTrainer:
 
     def train_model(self, x_train, y_train):
         try:
-            level0 = list()
-            level0.append((KNeighborsRegressor(n_neighbors= 5, p = 1)))
-            level0.append((SVR(kernel = 'rbf', gamma = 'scale', degree = 3, coef0 = 0.5214, tol= 2.102, C= 1.2885, epsilon= 0.1253, max_iter= 1000)))
-            
-            level1 = LinearRegression()
-            model = StackingRegressor(estimators=level0, final_estimator=level1, cv=5)
+            svr = SVR(kernel = 'rbf', gamma = 'scale', degree = 3, coef0 = 0.5214, tol= 2.102, C= 1.2885, epsilon= 0.1253, max_iter= 1000)
+            knn = KNeighborsRegressor(n_neighbors= 5, p = 1)
+            base_models = [('svr', svr), ('knn', knn)]
+            final_model = LinearRegression()
+            model = StackingRegressor(estimators=base_models, final_estimator=final_model)
             model.fit(x_train, y_train)
             return model
 
