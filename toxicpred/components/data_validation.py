@@ -1,7 +1,8 @@
 import os, sys
 import json
 import pandas as pd
-from scipy.stats import ks_2samp
+from evidently.model_profile import Profile
+from evidently.model_profile.sections import DataDriftProfileSection
 from pandas import DataFrame
 from toxicpred.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from toxicpred.entity.config_entity import DataValidationConfig
@@ -84,37 +85,32 @@ class DataValidation:
             raise ToxicityException(e, sys) from e
 
     def detect_dataset_drift(
-        self, base_df: DataFrame, current_df: DataFrame, threshold=0.05
-    ) -> bool:
+        self, base_df: DataFrame, current_df: DataFrame) -> bool:
         '''
         takes input two dataframes and returns 'True' or 'False'
         if there is dataset drift found
         '''
         try:
-            status=True
-            report ={}
-            for column in base_df.columns:
-                d1 = base_df[column]
-                d2  = current_df[column]
-                is_same_dist = ks_2samp(d1,d2)
-                if threshold<=is_same_dist.pvalue:
-                    is_found=False
-                else:
-                    is_found = True 
-                    status=False
-                report.update({column:{
-                    "p_value":float(is_same_dist.pvalue),
-                    "drift_status":is_found
-                    
-                    }})
-            
-            drift_report_file_path = self.data_validation_config.drift_report_file_path
-            
-            #Create directory
-            dir_path = os.path.dirname(drift_report_file_path)
-            os.makedirs(dir_path,exist_ok=True)
-            write_yaml_file(file_path=drift_report_file_path,content=report,)
-            return status
+            data_drift_profile = Profile(sections=[DataDriftProfileSection()])
+
+            data_drift_profile.calculate(base_df, current_df)
+
+            report = data_drift_profile.json()
+            json_report = json.loads(report)
+
+            write_yaml_file(
+                file_path=self.data_validation_config.drift_report_file_path,
+                content=json_report,
+            )
+
+            n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
+            n_drifted_features = json_report["data_drift"]["data"]["metrics"][
+                "n_drifted_features"
+            ]
+
+            logging.info(f"{n_drifted_features}/{n_features} drift detected.")
+            drift_status = json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
+            return drift_status
         except Exception as e:
             raise ToxicityException(e, sys) from e
 
