@@ -13,7 +13,8 @@ from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
 from toxicpred.utils.main_utils import read_yaml_file
 from toxicpred.constant.training_pipeline import SCHEMA_FILE_PATH
-
+import warnings
+warnings.filterwarnings("ignore")
 
 class DataIngestion:
     def __init__(self, data_ingestion_config:DataIngestionConfig):

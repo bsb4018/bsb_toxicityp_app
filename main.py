@@ -1,6 +1,8 @@
 
 import logging
 from toxicpred.pipeline.train_pipeline import TrainPipeline
+import warnings
+warnings.filterwarnings("ignore")
 
 def main():
     try:

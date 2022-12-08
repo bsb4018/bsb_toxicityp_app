@@ -9,7 +9,8 @@ from toxicpred.utils.main_utils import save_object,load_object,write_yaml_file
 from toxicpred.ml.model.estimator import ModelResolver
 from toxicpred.constant.training_pipeline import TARGET_COLUMN
 import pandas  as  pd
-
+import warnings
+warnings.filterwarnings("ignore")
 class ModelEvaluation:
     def __init__(self, model_eval_config: ModelEvaluationConfig,
                        data_validation_artifact: DataValidationArtifact,

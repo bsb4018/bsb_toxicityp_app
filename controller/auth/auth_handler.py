@@ -3,7 +3,7 @@ from typing import Dict
 import os
 import jwt
 from decouple import config
-from constants import JWT_SECRET,JWT_ALGORITHM
+from .constants import JWT_SECRET,JWT_ALGORITHM
 
 JWT_SECRET = os.getenv(JWT_SECRET)
 JWT_ALGORITHM = os.getenv(JWT_ALGORITHM)

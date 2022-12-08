@@ -43,3 +43,4 @@ tortoise-orm
 db-sqlite3
 python-decouple
 email-validator
+jwt

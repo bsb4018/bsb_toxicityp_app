@@ -8,6 +8,8 @@ from toxicpred.utils.main_utils import read_yaml_file, read_json_file
 from toxicpred.constant.training_pipeline import SCHEMA_FILE_PATH, VALID_SCHEMA_FILE_PATH
 from toxicpred.logger import logging
 from toxicpred.utils.main_utils import load_object
+import warnings
+warnings.filterwarnings("ignore")
 
 class ModelPrediction:
     def __init__(self):

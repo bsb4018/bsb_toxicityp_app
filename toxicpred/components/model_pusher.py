@@ -7,7 +7,8 @@ import os,sys
 import shutil
 from toxicpred.ml.metric.regression_metric import get_regression_score
 from toxicpred.utils.main_utils import save_object,load_object,write_yaml_file
-
+import warnings
+warnings.filterwarnings("ignore")
 class ModelPusher:
     def __init__(self, model_pusher_config: ModelPusherConfig,
                        model_eval_artifact: ModelEvaluationArtifact):

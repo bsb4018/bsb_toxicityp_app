@@ -14,7 +14,8 @@ from sklearn.impute import SimpleImputer
 #from toxicpred.ml.model.estimator import TargetValueMapping
 from toxicpred.utils.main_utils import read_yaml_file,save_numpy_array_data, save_object
 from toxicpred.constant.training_pipeline import SCHEMA_FILE_PATH
-
+import warnings
+warnings.filterwarnings("ignore")
 
 class DataTransformation:
     def __init__(self,

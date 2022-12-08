@@ -13,7 +13,8 @@ from toxicpred.constant.training_pipeline import SCHEMA_FILE_PATH, VALID_SCHEMA_
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
 from toxicpred.utils.main_utils import read_yaml_file, write_yaml_file, read_json_file
-
+import warnings
+warnings.filterwarnings("ignore")
 
 class DataValidation:
     def __init__(
@@ -256,14 +257,17 @@ class DataValidation:
             dir_path_valid_test = os.path.dirname(self.data_validation_config.valid_test_file_path)
             os.makedirs(dir_path_valid_test, exist_ok=True)
 
-            valid_train_df = self.drop_invalid_columns_data(df=train_df)
-            valid_test_df = self.drop_invalid_columns_data(df=test_df)
+            #valid_train_df = self.drop_invalid_columns_data(df=train_df)
+            #valid_test_df = self.drop_invalid_columns_data(df=test_df)
+
+            valid_train_df = train_df
+            valid_test_df = test_df
 
             valid_train_df.to_csv(
-                dir_path_valid_train, index=False, header=True
+                self.data_validation_config.valid_train_file_path, index=False, header=True
             )
             valid_test_df.to_csv(
-                dir_path_valid_test, index=False, header=True
+               self.data_validation_config.valid_test_file_path, index=False, header=True
             )
 
             #Check Data Drift
