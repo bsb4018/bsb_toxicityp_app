@@ -4,9 +4,18 @@ import sys
 import dill
 import numpy as np
 import yaml
-
+import json
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
+
+def read_json_file(file_path: str) -> dict:
+    try:
+        with open(file_path) as json_file:
+            return json.load(json_file)
+    
+    except Exception as e:
+        raise ToxicityException(e,sys) from e
+
 
 def read_yaml_file(file_path: str) -> dict:
     try:

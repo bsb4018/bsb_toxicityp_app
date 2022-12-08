@@ -46,6 +46,10 @@ async def predict_route(csv_file: UploadFile = File(...)):
        
         df = pd.read_csv(csv_file.file)
         prediction_pipeline = PredictionPipeline()
+        #validate the data
+        valid_status = prediction_pipeline.validate(df)
+        if not valid_status:
+            return Response("Invalid input")
         predictions = prediction_pipeline.predict(df)
         if not predictions:
             return Response("Model is not available")

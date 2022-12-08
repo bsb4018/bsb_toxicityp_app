@@ -19,3 +19,19 @@ target_columns:
 - responseLC50
 drop_columns:
 - Index
+valid_numerical_data:
+- CIC0:
+    min: 0.667
+    max: 5.926
+- GATS1i:
+    min: 0.396
+    max: 2.920
+- MLOGP:
+    min: -2.884
+    max: 6.203
+- SM1_DzZ:
+    min: 0.0
+    max: 2.071
+valid_categorical_data:
+- NdsCH : [0,1,2,3,4]
+- NdssC : [0,1,2,3,4,5,6]

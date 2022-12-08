@@ -9,10 +9,10 @@ from evidently.dashboard.tabs import DataDriftTab
 from pandas import DataFrame
 from toxicpred.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from toxicpred.entity.config_entity import DataValidationConfig
-from toxicpred.constant.training_pipeline import SCHEMA_FILE_PATH
+from toxicpred.constant.training_pipeline import SCHEMA_FILE_PATH, VALID_SCHEMA_FILE_PATH
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
-from toxicpred.utils.main_utils import read_yaml_file, write_yaml_file
+from toxicpred.utils.main_utils import read_yaml_file, write_yaml_file, read_json_file
 
 
 class DataValidation:
@@ -25,6 +25,7 @@ class DataValidation:
             self.data_ingestion_artifact = data_ingestion_artifact
             self.data_validation_config = data_validation_config
             self._schema_config = read_yaml_file(file_path=SCHEMA_FILE_PATH)
+            self._valid_schema = read_json_file(file_path=VALID_SCHEMA_FILE_PATH)
         except Exception as e:
             raise ToxicityException(e, sys) from e
 
@@ -86,6 +87,44 @@ class DataValidation:
 
         except Exception as e:
             raise ToxicityException(e, sys) from e
+
+    def drop_invalid_columns_data(self,df: DataFrame) -> DataFrame:
+        try:
+            #numerical columns
+            cico_min = self._valid_schema["CIC0"]["min"]
+            cico_max = self._valid_schema["CIC0"]["max"]
+            #cico_val_list = list(df["CIC0"].values)
+
+            gats_min = self._valid_schema["GATS1i"]["min"]
+            gats_max = self._valid_schema["GATS1i"]["max"]
+            #gats_val_list = list(df["GATS1i"].values)
+
+            mlogp_min = self._valid_schema["MLOGP"]["min"]
+            mlogp_max = self._valid_schema["MLOGP"]["max"]
+            #mlogp_val_list = list(df["MLOGP"].values)
+
+            smdz_min = self._valid_schema["SM1_DzZ"]["min"]
+            smdz_max = self._valid_schema["SM1_DzZ"]["max"]
+            #smdz_val_list = list(df["SM1_DzZ"].values)
+
+
+            #categorical columns
+            valid_ndsch_list = self._valid_schema["NdsCH"]
+            #ndsch_values_list = list(df['NdsCH'].values)
+
+            valid_ndssc_list = self._valid_schema["NdssC"]
+            #ndssc_values_list = list(df['NdsCH'].values)
+
+
+            dfnew = df[(df['CIC0'] >= cico_min) & (df['CIC0'] <= cico_max) & (df['GATS1i'] >= gats_min) & (df["GATS1i"] <= gats_max) & \
+                       (df["MLOGP"] >= mlogp_min) & (df["MLOGP"] <= mlogp_max) & (df["SM1_DzZ"] >= smdz_min) & (df["SM1_DzZ"] <= smdz_max)\
+                        (df['NdsCH'].isin(valid_ndsch_list)) & (df['NdssC'].isin(valid_ndssc_list))]
+                        
+            return dfnew
+   
+        except Exception as e:
+            raise ToxicityException(e, sys) from e
+
 
     def detect_dataset_drift(
         self, base_df: DataFrame, current_df: DataFrame) -> bool:
@@ -210,6 +249,22 @@ class DataValidation:
             if not validation_status:
                 raise Exception(validation_error_msg)
 
+            
+            dir_path_valid_train = os.path.dirname(self.data_validation_config.valid_train_file_path)
+            os.makedirs(dir_path_valid_train, exist_ok=True)
+
+            dir_path_valid_test = os.path.dirname(self.data_validation_config.valid_test_file_path)
+            os.makedirs(dir_path_valid_test, exist_ok=True)
+
+            valid_train_df = self.drop_invalid_columns_data(df=train_df)
+            valid_test_df = self.drop_invalid_columns_data(df=test_df)
+
+            valid_train_df.to_csv(
+                dir_path_valid_train, index=False, header=True
+            )
+            valid_test_df.to_csv(
+                dir_path_valid_test, index=False, header=True
+            )
 
             #Check Data Drift
             validation_error_msg = ""
@@ -226,8 +281,8 @@ class DataValidation:
 
             data_validation_artifact = DataValidationArtifact(
                 validation_status=status,
-                valid_train_file_path=self.data_ingestion_artifact.trained_file_path,
-                valid_test_file_path=self.data_ingestion_artifact.test_file_path,
+                valid_train_file_path=self.data_validation_config.valid_train_file_path,
+                valid_test_file_path=self.data_validation_config.valid_test_file_path,
                 invalid_train_file_path=self.data_validation_config.invalid_train_file_path,
                 invalid_test_file_path=self.data_validation_config.invalid_test_file_path,
                 drift_report_file_path=self.data_validation_config.drift_report_file_path,
