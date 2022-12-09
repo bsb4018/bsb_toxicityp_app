@@ -27,7 +27,7 @@ def check_user(data: UserLoginSchema):
     return False
 
 
-@app.get("/train", dependencies=[Depends(JWTBearer())])
+@app.get("/train")
 async def train_routed():
     try:
 
@@ -40,7 +40,7 @@ async def train_routed():
         return Response(f"Error Occurred! {e}")
 
 
-@app.post("/predict", dependencies=[Depends(JWTBearer())])
+@app.post("/predict")
 async def predict_route(csv_file: UploadFile = File(...)):
     try:
        

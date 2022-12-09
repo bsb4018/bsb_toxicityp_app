@@ -85,15 +85,15 @@ jobs:
         run: |
          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      #- name: Stop and remove sensor container if running
-      #  run: |
-      #   docker ps -q --filter "name=toxicity" | grep -q . && docker stop toxicity && docker rm -fv toxicity
+      - name: Stop and remove sensor container if running
+        run: |
+         docker ps -q --filter "name=toxicity" | grep -q . && docker stop toxicity && docker rm -fv toxicity
 
       
       - name: Run Docker Image to serve users
         run: |
          docker run -d -p 80:8080 --name=toxicity -e 'JWT_SECRET=${{ secrets.JWT_SECRET }}' -e 'JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }}' -e 'KEYSPACE_NAME=${{ secrets.KEYSPACE_NAME }}' -e 'DATABASE_NAME=${{ secrets.DATABASE_NAME }}' -e 'ASTRA_TOXIC_CLIENT_ID=${{ secrets.ASTRA_TOXIC_CLIENT_ID }}' -e 'ASTRA_TOXIC_CLIENT_SECRET=${{secrets.ASTRA_TOXIC_CLIENT_SECRET}}' -e  'ASTRA_TOXIC_SECURE_CONNECT_BUNDLE_PATH=${{secrets.ASTRA_TOXIC_SECURE_CONNECT_BUNDLE_PATH}}' -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
       
-      #- name: Clean previous images and containers
-      #  run: |
-      #   docker system prune -f
+      - name: Clean previous images and containers
+        run: |
+         docker system prune -f
