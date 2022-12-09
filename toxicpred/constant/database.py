@@ -3,4 +3,4 @@ KEYSPACE_NAME = "qtoxickeys"
 DATABASE_NAME = "qtoxdata"
 
 #S3 BUCKET CONSTANTS
-TRAINING_BUCKET_NAME = "bsb-qsar-toxicity-model"
+TRAINING_BUCKET_NAME = "42210bsb4018-toxicity-s3"

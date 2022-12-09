@@ -91,3 +91,5 @@ model_exp4.ipynb
 model_exp5.ipynb
 model_exp6.ipynb
 model_exp_main.ipynb
+.terraform
+.terraform.lock.hcl
