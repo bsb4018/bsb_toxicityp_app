@@ -91,7 +91,7 @@ jobs:
 
       - name: Run Docker Image to serve users
         run: |
-         docker run -d -p 80:8080 --name=toxicity -e 'ASTRA_TOXIC_CLIENT_ID=${{ secrets.ASTRA_TOXIC_CLIENT_ID }}' -e 'ASTRA_TOXIC_CLIENT_SECRET=${{ secrets.ASTRA_TOXIC_CLIENT_SECRET }}' -e  'ASTRA_TOXIC_SECURE_CONNECT_BUNDLE_PATH=${{ secrets.ASTRA_TOXIC_SECURE_CONNECT_BUNDLE_PATH }}' -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+         docker run -d -p 80:8080 --name=toxicity -e 'ASTRA_CLUSTER_ID=${{ secrets.ASTRA_CLUSTER_ID }}' -e 'ASTRA_REGION=${{ secrets.ASTRA_REGION }}' -e 'ASTRA_DB_APPLICATION_TOKEN=${{ secrets.ASTRA_DB_APPLICATION_TOKEN }}' -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
       
       
       - name: Clean previous images and containers

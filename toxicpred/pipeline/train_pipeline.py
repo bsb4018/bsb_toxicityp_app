@@ -169,8 +169,8 @@ class TrainPipeline:
             
             else:
                 model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
-                #self.sync_artifact_dir_to_s3()
-                #self.sync_saved_model_dir_to_s3()
+                self.sync_artifact_dir_to_s3()
+                self.sync_saved_model_dir_to_s3()
 
             
             TrainPipeline.is_pipeline_running=False
@@ -179,6 +179,6 @@ class TrainPipeline:
                 "Exited the run_pipeline method of TrainPipeline class"
             )
         except Exception as e:
-            #self.sync_artifact_dir_to_s3()
+            self.sync_artifact_dir_to_s3()
             TrainPipeline.is_pipeline_running=False
             raise ToxicityException(e, sys) from e
