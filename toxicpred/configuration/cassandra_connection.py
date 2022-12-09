@@ -2,7 +2,7 @@ import os
 import sys
 
 from toxicpred.constant.database import KEYSPACE_NAME,DATABASE_NAME
-from toxicpred.constant.env_variable import SECURE_CONNECT_BUNDLE_PATH, CLIENT_ID, CLIENT_SECRET, ASTRA_CLUSTER_ID, ASTRA_REGION, ASTRA_DB_APPLICATION_TOKEN
+from toxicpred.constant.env_variable import ASTRA_CLUSTER_ID, ASTRA_REGION, ASTRA_DB_APPLICATION_TOKEN
 from toxicpred.exception import ToxicityException
 from pathlib import Path
 from astrapy.rest import create_client, http_methods

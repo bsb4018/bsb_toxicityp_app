@@ -1,4 +1,3 @@
-
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging
 from toxicpred.entity.artifact_entity import ModelPusherArtifact,ModelTrainerArtifact,ModelEvaluationArtifact
