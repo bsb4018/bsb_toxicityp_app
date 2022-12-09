@@ -14,9 +14,9 @@ class AstraCassandraConfig:
         try:
             self.keyspace_name = KEYSPACE_NAME
             self.database_name = DATABASE_NAME
-            self.secure_connect_bundle_path = os.getenv(SECURE_CONNECT_BUNDLE_PATH)
-            self.client_id = os.getenv(CLIENT_ID)
-            self.client_secret = os.getenv(CLIENT_SECRET)
+            #self.secure_connect_bundle_path = os.getenv(SECURE_CONNECT_BUNDLE_PATH)
+            #self.client_id = os.getenv(CLIENT_ID)
+            #self.client_secret = os.getenv(CLIENT_SECRET)
             self.astra_cluster_id = os.getenv(ASTRA_CLUSTER_ID)
             self.astra_region = os.getenv(ASTRA_REGION)
             self.astra_db_application_token = os.getenv(ASTRA_DB_APPLICATION_TOKEN)

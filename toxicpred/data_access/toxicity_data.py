@@ -17,6 +17,7 @@ class ToxicityData:
         except Exception as e:
             raise ToxicityException(e, sys)
 
+    '''
     def export_from_astra_database_to_dataframe_using_driver(self) -> pd.DataFrame:
         try:
             cloud_config = {
@@ -32,6 +33,7 @@ class ToxicityData:
 
         except Exception as e:
             raise ToxicityException(e,sys)
+    '''
 
     def export_from_astra_database_to_dataframe_using_restapi(self) -> pd.DataFrame:
         try:
