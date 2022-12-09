@@ -28,7 +28,8 @@ class DataIngestion:
         try:
             logging.info("Exporting data from astra cassandra database")
             toxic_data = ToxicityData()
-            dataframe = toxic_data.export_from_astra_database_to_dataframe()
+            #dataframe = toxic_data.export_from_astra_database_to_dataframe_using_driver()
+            dataframe = toxic_data.export_from_astra_database_to_dataframe_using_restapi()
             logging.info(f"Shape of dataframe: {dataframe.shape}")
             feature_store_file_path = self.data_ingestion_config.feature_store_file_path
             dir_path = os.path.dirname(feature_store_file_path)
