@@ -17,15 +17,31 @@ from passlib.hash import bcrypt
 from controller.model import PostSchema, UserSchema, UserLoginSchema
 from controller.auth.auth_bearer import JWTBearer
 from controller.auth.auth_handler import signJWT
+
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/", tags=["authentication"])
+async def index():
+    return RedirectResponse(url="/docs")
+
+'''
 users = []
 def check_user(data: UserLoginSchema):
     for user in users:
         if user.email == data.email and user.password == data.password:
             return True
     return False
-
+'''
 
 @app.get("/train")
 async def train_routed():
@@ -58,7 +74,7 @@ async def predict_route(csv_file: UploadFile = File(...)):
     except Exception as e:
         raise Response(f"Error Occured! {e}")
 
-
+'''
 @app.post("/user/signup", tags=["user"])
 def create_user(user: UserSchema = Body(...)):
     users.append(user) # replace with db call, making sure to hash the password first
@@ -72,11 +88,12 @@ def user_login(user: UserLoginSchema = Body(...)):
     return {
         "error": "Wrong login details!"
     }
-
-#if __name__ == "__main__":
- #   app_run(app, host=APP_HOST, port=APP_PORT)
-
+'''
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=APP_HOST, port=APP_PORT)
+    app_run(app, host=APP_HOST, port=APP_PORT)
+
+
+#if __name__ == "__main__":
+#    uvicorn.run(app, host=APP_HOST, port=APP_PORT)
 
