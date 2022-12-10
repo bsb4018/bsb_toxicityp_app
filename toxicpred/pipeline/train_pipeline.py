@@ -11,7 +11,7 @@ from toxicpred.constant.database import TRAINING_BUCKET_NAME
 from toxicpred.constant.training_pipeline import SAVED_MODEL_DIR
 
 from toxicpred.exception import ToxicityException
-from toxicpred.logger import logging
+from toxicpred.logger import logging,LOG_FILE_PATH
 
 class TrainPipeline:
     is_pipeline_running=False
@@ -136,6 +136,17 @@ class TrainPipeline:
         except  Exception as e:
             raise  ToxicityException(e,sys)
 
+    def sync_logs_dir_to_s3(self):
+        try:
+            logging.info("Entered the sync_logs_dir_to_s3 method of TrainPipeline class")
+            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/logs/{self.training_pipeline_config.timestamp}"
+            self.s3_sync.sync_folder_to_s3(folder = LOG_FILE_PATH,aws_buket_url=aws_bucket_url)
+            logging.info("Performed Syncing of artifact to S3 bucket")
+
+        except Exception as e:
+            raise ToxicityException(e,sys)
+
+  
     def sync_artifact_dir_to_s3(self):
         try:
             logging.info("Entered the sync_artifact_dir_to_s3 method of TrainPipeline class")
@@ -169,8 +180,8 @@ class TrainPipeline:
             
             else:
                 model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
-                self.sync_artifact_dir_to_s3()
-                self.sync_saved_model_dir_to_s3()
+                #self.sync_artifact_dir_to_s3()
+                #self.sync_saved_model_dir_to_s3()
 
             
             TrainPipeline.is_pipeline_running=False
@@ -179,6 +190,6 @@ class TrainPipeline:
                 "Exited the run_pipeline method of TrainPipeline class"
             )
         except Exception as e:
-            self.sync_artifact_dir_to_s3()
+            #self.sync_artifact_dir_to_s3()
             TrainPipeline.is_pipeline_running=False
             raise ToxicityException(e, sys) from e
