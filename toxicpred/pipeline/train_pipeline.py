@@ -18,8 +18,19 @@ class TrainPipeline:
     def __init__(self):
         self.training_pipeline_config = TrainingPipelineConfig()
     
+    def sync_logs_dir_to_s3(self):
+        try:
+            logging.info("Entered the sync_logs_dir_to_s3 method of TrainPipeline class")
+            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/logs/{self.training_pipeline_config.timestamp}"
+            self.s3_sync.sync_folder_to_s3(folder = LOG_FILE_PATH,aws_buket_url=aws_bucket_url)
+            logging.info("Performed Syncing of artifact to S3 bucket")
+
+        except Exception as e:
+            raise ToxicityException(e,sys)
+    
     def start_data_ingestion(self) -> DataIngestionArtifact:
         try:
+            self.sync_logs_dir_to_s3()
             logging.info(
               "Entered the start_data_ingestion method of TrainPipeline class"
             )
@@ -34,9 +45,11 @@ class TrainPipeline:
             logging.info(
                 "Exited the start_data_ingestion method of TrainPipeline class"
             )
+            self.sync_logs_dir_to_s3()
             return data_ingestion_artifact
     
         except Exception as e:
+            self.sync_logs_dir_to_s3()
             raise ToxicityException(e, sys) from e
     
     def start_data_validation(
@@ -57,10 +70,11 @@ class TrainPipeline:
             logging.info(
                 "Exited the start_data_validation method of TrainPipeline class"
             )
-
+            self.sync_logs_dir_to_s3()
             return data_validation_artifact
 
         except Exception as e:
+            self.sync_logs_dir_to_s3()
             raise ToxicityException(e,sys) from e
 
     def start_data_transformation(
@@ -80,9 +94,10 @@ class TrainPipeline:
             logging.info(
                 "Exited the start_data_transformation method of TrainPipeline class"
             )
-
+            self.sync_logs_dir_to_s3()
             return data_transformation_artifact
         except Exception as e:
+            self.sync_logs_dir_to_s3()
             raise ToxicityException(e, sys) from e
 
     def start_model_trainer(self,data_transformation_artifact:DataTransformationArtifact):
@@ -98,9 +113,11 @@ class TrainPipeline:
                 "Exited the start_model_trainer method of TrainPipeline class"
             )
 
+            self.sync_logs_dir_to_s3()
             return model_trainer_artifact
 
         except  Exception as e:
+            self.sync_logs_dir_to_s3()
             raise  ToxicityException(e,sys) from e
 
     def start_model_evaluation(self,data_validation_artifact:DataValidationArtifact,
@@ -116,8 +133,11 @@ class TrainPipeline:
             logging.info(
                 "Exited the start_model_evaluation method of TrainPipeline class"
             )
+            self.sync_logs_dir_to_s3()
             return model_eval_artifact
+        
         except  Exception as e:
+            self.sync_logs_dir_to_s3()
             raise ToxicityException(e,sys) from e
 
     def start_model_pusher(self,model_eval_artifact:ModelEvaluationArtifact):
@@ -131,21 +151,11 @@ class TrainPipeline:
             logging.info(
                 "Exited the start_model_pusher method of TrainPipeline class"
             )
-
+            self.sync_logs_dir_to_s3()
             return model_pusher_artifact
         except  Exception as e:
+            self.sync_logs_dir_to_s3()
             raise  ToxicityException(e,sys)
-
-    def sync_logs_dir_to_s3(self):
-        try:
-            logging.info("Entered the sync_logs_dir_to_s3 method of TrainPipeline class")
-            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/logs/{self.training_pipeline_config.timestamp}"
-            self.s3_sync.sync_folder_to_s3(folder = LOG_FILE_PATH,aws_buket_url=aws_bucket_url)
-            logging.info("Performed Syncing of artifact to S3 bucket")
-
-        except Exception as e:
-            raise ToxicityException(e,sys)
-
   
     def sync_artifact_dir_to_s3(self):
         try:
@@ -168,6 +178,7 @@ class TrainPipeline:
     
     def run_pipeline(self,) -> None:
         try:
+            self.sync_logs_dir_to_s3()
             logging.info("Entered the run_pipeline method of TrainPipeline class")
             TrainPipeline.is_pipeline_running=True
             data_ingestion_artifact:DataIngestionArtifact = self.start_data_ingestion()
@@ -176,12 +187,14 @@ class TrainPipeline:
             model_trainer_artifact = self.start_model_trainer(data_transformation_artifact)
             model_eval_artifact = self.start_model_evaluation(data_validation_artifact, model_trainer_artifact)
             if not model_eval_artifact.is_model_accepted:
+                self.sync_logs_dir_to_s3()
                 print("Process Completed Succesfully. Model Trained and Evaluated but the Trained model is not better than the best model. So, we do not push this model to Production. Exiting.")
             
             else:
                 model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
-                #self.sync_artifact_dir_to_s3()
-                #self.sync_saved_model_dir_to_s3()
+                self.sync_logs_dir_to_s3()
+                self.sync_artifact_dir_to_s3()
+                self.sync_saved_model_dir_to_s3()
 
             
             TrainPipeline.is_pipeline_running=False
@@ -190,6 +203,7 @@ class TrainPipeline:
                 "Exited the run_pipeline method of TrainPipeline class"
             )
         except Exception as e:
-            #self.sync_artifact_dir_to_s3()
+            self.sync_logs_dir_to_s3()
+            self.sync_artifact_dir_to_s3()
             TrainPipeline.is_pipeline_running=False
             raise ToxicityException(e, sys) from e

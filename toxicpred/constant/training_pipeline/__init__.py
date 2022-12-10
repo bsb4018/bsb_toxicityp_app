@@ -28,10 +28,6 @@ DATA_INGESTION_INGESTED_DIR: str = "ingested"
 DATA_INGESTION_TRAIN_TEST_SPLIT_RATION: float = 0.2
 DATA_INGESTION_RANDOM_STATE: int = 42
 
- #DATA_INGESTION_RANDOM_STATE: int = 34         'logs\11_12_2022_03_12_12.log' 'artifact\11_12_2022_03_12_12'
- #DATA_INGESTION_RANDOM_STATE: int = 38 #best   'logs\11_12_2022_03_14_44.log' 'artifact\11_12_2022_03_14_44'
-
-
 '''
 Data Validation related constant start with DATA_VALIDATION VAR NAME
 '''
