@@ -12,11 +12,13 @@ from toxicpred.constant.training_pipeline import SAVED_MODEL_DIR
 
 from toxicpred.exception import ToxicityException
 from toxicpred.logger import logging,LOG_FILE_PATH
+from toxicpred.cloud_storage.s3_syncer import S3Sync
 
 class TrainPipeline:
     is_pipeline_running=False
     def __init__(self):
         self.training_pipeline_config = TrainingPipelineConfig()
+        self.s3_sync = S3Sync()
     
     def start_data_ingestion(self) -> DataIngestionArtifact:
         try:
@@ -181,11 +183,10 @@ class TrainPipeline:
                 raise Exception("Process Completed Succesfully. Model Trained and Evaluated but the Trained model is not better than the best model. So, we do not push this model to Production. Exiting.")
             
             model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
+            TrainPipeline.is_pipeline_running=False
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
-            TrainPipeline.is_pipeline_running=False
-
-            
+                        
             logging.info("Training Pipeline Running Operation Complete")
             logging.info(
                 "Exited the run_pipeline method of TrainPipeline class"
