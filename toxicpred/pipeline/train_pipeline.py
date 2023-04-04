@@ -186,7 +186,8 @@ class TrainPipeline:
             TrainPipeline.is_pipeline_running=False
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
-                        
+            
+              
             logging.info("Training Pipeline Running Operation Complete")
             logging.info(
                 "Exited the run_pipeline method of TrainPipeline class"

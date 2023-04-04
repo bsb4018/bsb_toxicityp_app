@@ -11,9 +11,11 @@ from toxicpred.utils.main_utils import load_object
 import warnings
 warnings.filterwarnings("ignore")
 
+
 class ModelPrediction:
     def __init__(self):
         try:
+            
             self.model_resolver_local = ModelResolver(model_dir=SAVED_MODEL_DIR)
             self.s3_sync = S3Sync()
             self._schema_config = read_yaml_file(file_path=SCHEMA_FILE_PATH)
