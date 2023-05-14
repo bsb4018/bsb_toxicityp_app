@@ -28,11 +28,7 @@ class ModelTrainer:
 
     def train_model(self, x_train, y_train):
         try:
-            svr = SVR(kernel = 'rbf', gamma = 'scale', degree = 3, coef0 = 0.5214, tol= 2.102, C= 1.2885, epsilon= 0.1253, max_iter= 1000)
-            knn = KNeighborsRegressor(n_neighbors= 5, p = 1)
-            base_models = [('svr', svr), ('knn', knn)]
-            final_model = LinearRegression()
-            model = StackingRegressor(estimators=base_models, final_estimator=final_model)
+            model = KNeighborsRegressor(n_neighbors= 5, p = 1)
             model.fit(x_train, y_train)
             return model
 
