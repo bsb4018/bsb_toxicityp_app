@@ -8,6 +8,7 @@ from uvicorn import run as app_run
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
+from pydantic import BaseModel
 from toxicpred.pipeline.prediction_pipeline import PredictionPipeline
 from toxicpred.constant.application import APP_HOST, APP_PORT
 app = FastAPI()
@@ -27,6 +28,16 @@ async def index():
     return RedirectResponse(url="/docs")
 
 
+class Toxic_Item(BaseModel):
+    GATS1i: float
+    SM1_DzZ: float
+    NdssC: int
+    NdsCH: int
+    MLOGP: float
+    CIC0: float
+    
+
+
 @app.get("/train")
 async def train_routed():
     try:
@@ -40,8 +51,31 @@ async def train_routed():
         return Response(f"Error Occurred! {e}")
 
 
-@app.post("/predict")
-async def predict_route(csv_file: UploadFile = File(...)):
+@app.post("/predict_single")
+async def predict_route(item: Toxic_Item):
+    try:
+       
+        item_dict = dict(item)
+        prediction_pipeline = PredictionPipeline()
+        df = pd.DataFrame(item_dict, index=[0])
+        
+        #validate the data
+        valid_status = prediction_pipeline.validate(df)
+        if not valid_status:
+            return Response("Invalid input")
+        
+        predictions = prediction_pipeline.predict(df)
+        if not predictions:
+            return Response("Model is not available")
+        return { "prediction": predictions}
+        
+    except Exception as e:
+        raise Response(f"Error Occured! {e}")
+
+
+
+@app.post("/predict_many")
+async def predict_route_many(csv_file: UploadFile = File(...)):
     try:
        
         df = pd.read_csv(csv_file.file)
@@ -57,7 +91,7 @@ async def predict_route(csv_file: UploadFile = File(...)):
         
     except Exception as e:
         raise Response(f"Error Occured! {e}")
-
+    
 
 #if __name__ == "__main__":
 #    app_run(app, host=APP_HOST, port=APP_PORT)

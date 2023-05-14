@@ -105,10 +105,10 @@ class ModelPrediction:
             best_model_path = model_resolver.get_best_model_path()
             model = load_object(file_path=best_model_path)
             y_pred = model.predict(df)
-            df['predicted_column'] = y_pred
-            prediction_result = df['predicted_column'].tolist()
+            #df['predicted_column'] = y_pred
+            #prediction_result = df['predicted_column'].tolist()
             logging.info("Exiting the predict_output method of Model Prediction class")
-            return prediction_result
+            return y_pred.tolist()
 
         except Exception as e:
             raise ToxicityException(e,sys) from e
