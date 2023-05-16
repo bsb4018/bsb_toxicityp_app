@@ -9,7 +9,7 @@ from toxicpred.logger import logging
 import pandas as pd
 import numpy as np
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler,RobustScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 #from toxicpred.ml.model.estimator import TargetValueMapping
 from toxicpred.utils.main_utils import read_yaml_file,save_numpy_array_data, save_object
@@ -46,10 +46,11 @@ class DataTransformation:
         try:
             logging.info("Got numerical cols from schema config")
             
-            #simple_imputer = SimpleImputer(strategy="constant", fill_value=0)
-            robust_scaler = RobustScaler()
+            simple_imputer = SimpleImputer(strategy="constant", fill_value=0)
+            #standard_scaler = StandardScaler()
             preprocessor = Pipeline(
-                steps=[("RobustScaler", robust_scaler)]
+                steps=[("simple_imputer", simple_imputer,#"StandardScaler", standard_scaler
+                        )]
             )
 
             logging.info("Created preprocessor object from ColumnTransformer")
@@ -104,6 +105,7 @@ class DataTransformation:
                 "Used the preprocessor object to fit transform the train features"
             )
             train_df_transformed_scaled = pd.DataFrame(transformed_input_train_feature, columns = numerical_columns)
+            #train_df_transformed_scaled.index = input_feature_train_df
 
             transformed_input_test_feature = preprocessor_object.transform(input_feature_test_df[numerical_columns])
             logging.info(

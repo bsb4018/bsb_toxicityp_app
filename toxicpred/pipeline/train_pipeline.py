@@ -113,12 +113,13 @@ class TrainPipeline:
             raise  ToxicityException(e,sys) from e
 
     def start_model_evaluation(self,data_validation_artifact:DataValidationArtifact,
+                                 data_transformation_artifact:DataTransformationArtifact,
                                  model_trainer_artifact:ModelTrainerArtifact,
                                 ):
         try:
             logging.info("Entered the start_model_evaluation method of TrainPipeline class")
             model_eval_config = ModelEvaluationConfig(self.training_pipeline_config)
-            model_eval = ModelEvaluation(model_eval_config, data_validation_artifact, model_trainer_artifact)
+            model_eval = ModelEvaluation(model_eval_config, data_validation_artifact, data_transformation_artifact, model_trainer_artifact)
             model_eval_artifact = model_eval.initiate_model_evaluation()
 
             logging.info("Performed the Model Evaluation operation")
@@ -177,7 +178,7 @@ class TrainPipeline:
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(data_validation_artifact=data_validation_artifact)
             model_trainer_artifact = self.start_model_trainer(data_transformation_artifact)
-            model_eval_artifact = self.start_model_evaluation(data_validation_artifact, model_trainer_artifact)
+            model_eval_artifact = self.start_model_evaluation(data_validation_artifact, data_transformation_artifact, model_trainer_artifact)
             if not model_eval_artifact.is_model_accepted:
                 print("Process Completed Succesfully. Model Trained and Evaluated but the Trained model is not better than the best model. So, we do not push this model to Production. Exiting.")
                 raise Exception("Process Completed Succesfully. Model Trained and Evaluated but the Trained model is not better than the best model. So, we do not push this model to Production. Exiting.")
